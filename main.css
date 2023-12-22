@@ -1,0 +1,19 @@
+.booth {
+  width: 400px;
+  background-color: #ccc;
+  border: 10px solid #ddd;
+  margin: 0 auto;
+}
+
+/* @-webkit-keyframes rotate {
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+#canvas {
+  -webkit-filter: sepia(100%);
+  -webkit-animation: rotate 5s infinite linear;
+} */
+body {
+  background-color: black;
+}

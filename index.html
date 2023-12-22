@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Webcam and Video Stream on Single Canvas</title>
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+  <!-- <div id="container"> -->
+  <div id="">
+    <!-- <canvas id="newCanvas" width="800" height="200"></canvas> -->
+    <div class="top">
+      <canvas id="newCanvas"></canvas>
+    </div>
+    <div class="d-flex bottom">
+      <div class="left">
+        <div>
+          <video id="videoPlayer1" controls>
+            <source
+              src="https://streamonhub.s3.amazonaws.com/uploads/editor/data/comp_1/5oh63dbdab7n/option_3/video/video-lg.mp4"
+              type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div class="d-flex">
+            <button id="attachVideoButton1">Attach Video</button>
+            <button id="detachVideoButton1">Detach Video</button>
+          </div>
+        </div>
+        <div>
+          <video id="videoPlayer2" controls>
+            <source src="./video.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div class="d-flex">
+            <button id="attachVideoButton2">Attach Video</button>
+            <button id="detachVideoButton2">Detach Video</button>
+          </div>
+        </div>
+        <div>
+          <video id="videoPlayer3" controls>
+            <source src="./matt_devir--one_minute_drive.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div class="d-flex">
+            <button id="attachVideoButton3">Attach Video</button>
+            <button id="detachVideoButton3">Detach Video</button>
+          </div>
+        </div>
+      </div>
+      <div class="right">
+        <div>
+          <video id="webcamVideo" autoplay></video>
+          <div class="d-flex">
+            <button id="attachWebcamButton">Attach Webcam</button>
+            <button id="detachWebcamButton">Detach Webcam</button>
+          </div>
+        </div>
+      </div>
+
+
+
+
+    </div>
+    <div>
+      <div class="d-flex">
+        <button id="clearCanvasButton">Clear Canvas</button>
+        <button id="redrawCanvasButton">Redraw Canvas</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="canvastask.js"></script>
+</body>
+
+</html>

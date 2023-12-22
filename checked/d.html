@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Webcam and Video Stream on Separate Canvases</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Arial", sans-serif;
+        background-color: #f0f0f0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .d-flex {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 800px;
+      }
+
+      .d-flex > div {
+        flex: 1;
+      }
+
+      video,
+      canvas {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 20px;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        background-color: #fff;
+      }
+
+      canvas {
+        max-width: 400px;
+        height: 200px;
+        width: 100%;
+      }
+
+      #newCanvas {
+        width: 100%;
+        max-width: 800px;
+        margin-bottom: 20px;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        background-color: #fff;
+      }
+
+      button {
+        margin: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        width: 100%;
+        background-color: #014b7c;
+      }
+
+      #attachVideoButton,
+      #detachVideoButton,
+      #attachWebcamButton,
+      #detachWebcamButton,
+      #clearCanvasButton,
+      #redrawCanvasButton {
+        margin-right: 5px;
+      }
+
+      @media only screen and (max-width: 768px) {
+        .d-flex {
+          flex-direction: column;
+        }
+
+        canvas {
+          width: 100%;
+        }
+
+        #newCanvas {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="container">
+      <canvas id="newCanvas" width="400" height="200"></canvas>
+      <div class="d-flex">
+        <!-- Video Section -->
+        <div>
+          <video id="videoPlayer" controls>
+            <source
+              src="https://streamonhub.s3.amazonaws.com/uploads/editor/data/comp_1/5oh63dbdab7n/option_3/video/video-lg.mp4"
+              type="video/mp4"
+            />
+            Your browser does not support the video tag.
+          </video>
+          <div class="d-flex">
+            <button id="attachVideoButton">Attach Video</button>
+            <button id="detachVideoButton">Detach Video</button>
+          </div>
+          <canvas id="videoCanvas" width="400" height="200"></canvas>
+        </div>
+
+        <!-- Webcam Section -->
+        <div>
+          <video id="webcamVideo" autoplay></video>
+          <div class="d-flex">
+            <button id="attachWebcamButton">Attach Webcam</button>
+            <button id="detachWebcamButton">Detach Webcam</button>
+          </div>
+          <canvas id="webcamCanvas" width="400" height="200"></canvas>
+        </div>
+      </div>
+
+      <div>
+        <div class="d-flex">
+          <button id="clearCanvasButton">Clear Canvas</button>
+          <button id="redrawCanvasButton">Redraw Canvas</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Video Section
+        const videoPlayer = document.getElementById("videoPlayer");
+        const videoCanvas = document.getElementById("videoCanvas");
+        const ctxVideo = videoCanvas.getContext("2d");
+        let attachVideo = true;
+
+        const webcamVideo = document.getElementById("webcamVideo");
+        const webcamCanvas = document.getElementById("webcamCanvas");
+        const ctxWebcam = webcamCanvas.getContext("2d");
+        let attachWebcam = true;
+
+        // Common Canvas
+        const newCanvas = document.getElementById("newCanvas");
+        const newCtx = newCanvas.getContext("2d");
+
+        let continueDrawing = true;
+
+        videoPlayer.play();
+
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then((stream) => {
+            webcamVideo.srcObject = stream;
+
+            function drawVideo() {
+              ctxVideo.clearRect(0, 0, videoCanvas.width, videoCanvas.height);
+              if (attachVideo) {
+                ctxVideo.drawImage(
+                  videoPlayer,
+                  0,
+                  0,
+                  videoCanvas.width / 1,
+                  videoCanvas.height
+                );
+              }
+              if (continueDrawing) {
+                requestAnimationFrame(drawVideo);
+              }
+            }
+
+            function drawWebcam() {
+              ctxWebcam.clearRect(
+                0,
+                0,
+                webcamCanvas.width,
+                webcamCanvas.height
+              );
+              if (attachWebcam) {
+                ctxWebcam.drawImage(
+                  webcamVideo,
+                  0,
+                  0,
+                  webcamCanvas.width / 1,
+                  webcamCanvas.height
+                );
+              }
+              if (continueDrawing) {
+                requestAnimationFrame(drawWebcam);
+              }
+            }
+
+            function drawNewCanvas() {
+              // Your logic for drawing on the newCanvas goes here
+              newCtx.clearRect(0, 0, newCanvas.width, newCanvas.height);
+
+              // Draw video frame on newCanvas
+              if (attachVideo) {
+                newCtx.drawImage(
+                  videoCanvas,
+                  0,
+                  0,
+                  newCanvas.width / 2,
+                  newCanvas.height
+                );
+              }
+
+              // Draw webcam frame on newCanvas
+              if (attachWebcam) {
+                newCtx.drawImage(
+                  webcamCanvas,
+                  newCanvas.width / 2,
+                  0,
+                  newCanvas.width / 2,
+                  newCanvas.height
+                );
+              }
+
+              // Repeat the draw function if continueDrawing is true
+              if (continueDrawing) {
+                requestAnimationFrame(drawNewCanvas);
+              }
+            }
+
+            drawVideo();
+            drawWebcam();
+            drawNewCanvas(); // Start drawing on the newCanvas
+
+            const clearCanvasButton =
+              document.getElementById("clearCanvasButton");
+            clearCanvasButton.addEventListener("click", () => {
+              ctxVideo.clearRect(0, 0, videoCanvas.width, videoCanvas.height);
+              ctxWebcam.clearRect(
+                0,
+                0,
+                webcamCanvas.width,
+                webcamCanvas.height
+              );
+              newCtx.clearRect(0, 0, newCanvas.width, newCanvas.height);
+              continueDrawing = false;
+            });
+
+            const redrawCanvasButton =
+              document.getElementById("redrawCanvasButton");
+            redrawCanvasButton.addEventListener("click", () => {
+              continueDrawing = true;
+              drawVideo();
+              drawWebcam();
+              drawNewCanvas();
+            });
+
+            const attachVideoButton =
+              document.getElementById("attachVideoButton");
+            const detachVideoButton =
+              document.getElementById("detachVideoButton");
+            attachVideoButton.addEventListener("click", () => {
+              attachVideo = true;
+              drawVideo();
+              drawNewCanvas();
+            });
+            detachVideoButton.addEventListener("click", () => {
+              attachVideo = false;
+              drawVideo();
+              drawNewCanvas();
+            });
+
+            const attachWebcamButton =
+              document.getElementById("attachWebcamButton");
+            const detachWebcamButton =
+              document.getElementById("detachWebcamButton");
+            attachWebcamButton.addEventListener("click", () => {
+              attachWebcam = true;
+              drawWebcam();
+              drawNewCanvas();
+            });
+            detachWebcamButton.addEventListener("click", () => {
+              attachWebcam = false;
+              drawWebcam();
+              drawNewCanvas();
+            });
+          })
+          .catch((error) => {
+            console.error("Error accessing webcam:", error);
+          });
+      });
+    </script>
+  </body>
+</html>
